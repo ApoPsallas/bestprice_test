@@ -1,13 +1,13 @@
 package http
 
 import (
-	"bestprice_test/internal/app/service"
+	"bestprice_test/internal/app/repository"
 	"encoding/json"
 	"net/http"
 )
 
 type Handler struct {
-	Service service.ApiService
+	Repo *repository.Mapper
 }
 
 //List ...
@@ -32,7 +32,7 @@ func (h *Handler) Read(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		w.WriteHeader(http.StatusOK)
-
+		
 		_ = json.NewEncoder(w).Encode("Success")
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)

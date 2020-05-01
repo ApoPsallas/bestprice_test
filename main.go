@@ -1,17 +1,24 @@
 package main
 
 import (
-	"bestprice_test/internal/app/service"
+	"bestprice_test/internal/app/repository"
+	app_sql "bestprice_test/internal/app/repository/sql"
 	bp_http "bestprice_test/internal/http"
 	"fmt"
 	"log"
 	"net/http"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func createRouter() *http.ServeMux {
 	r := http.NewServeMux()
-	s := service.ApiService{}
-	h := bp_http.Handler{Service: s}
+	db, _ := app_sql.ConnectToDB()
+
+	repo := repository.NewMapper(db)
+
+	h := bp_http.Handler{Repo: repo}
+
 	r.HandleFunc("/list", h.List)
 	r.HandleFunc("/read", h.Read)
 	r.HandleFunc("/create", h.Create)
