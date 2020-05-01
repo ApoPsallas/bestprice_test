@@ -9,12 +9,14 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 )
 
-func createRouter(cfg *config.Config) *http.ServeMux {
-	r := http.NewServeMux()
+func createRouter(cfg *config.Config) *mux.Router {
+	r := mux.NewRouter()
 	db, _ := app_sql.ConnectToDB(cfg.MySQL)
 
 	repo := repository.NewMapper(db)
@@ -26,6 +28,7 @@ func createRouter(cfg *config.Config) *http.ServeMux {
 	r.HandleFunc("/create", h.Create)
 	r.HandleFunc("/update", h.Update)
 	r.HandleFunc("/delete", h.Delete)
+
 	return r
 
 }
