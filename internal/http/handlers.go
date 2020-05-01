@@ -10,81 +10,86 @@ type Handler struct {
 	Repo *repository.Mapper
 }
 
-//List ...
-func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
+// PRODUCT HANDLERS
 
-	switch r.Method {
-	case http.MethodGet:
-		w.WriteHeader(http.StatusOK)
+//ListProducts ...
+func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
 
-		_ = json.NewEncoder(w).Encode("Success")
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
+	w.WriteHeader(http.StatusOK)
 
-		_ = json.NewEncoder(w)
-	}
-
+	_ = json.NewEncoder(w).Encode("Success")
 }
 
-//Read ...
-func (h *Handler) Read(w http.ResponseWriter, r *http.Request) {
+//ReadProduct ...
+func (h *Handler) ReadProduct(w http.ResponseWriter, r *http.Request) {
 
-	switch r.Method {
-	case http.MethodGet:
-		w.WriteHeader(http.StatusOK)
-		
-		_ = json.NewEncoder(w).Encode("Success")
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
+	w.WriteHeader(http.StatusOK)
 
-		_ = json.NewEncoder(w)
-	}
-
+	_ = json.NewEncoder(w).Encode("Success")
 }
 
-//Create ...
-func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
+//CreateProduct ...
+func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
-	switch r.Method {
-	case http.MethodPost:
-		w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusOK)
 
-		_ = json.NewEncoder(w).Encode("Success")
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
-
-		_ = json.NewEncoder(w)
-	}
+	_ = json.NewEncoder(w).Encode("Success")
 }
 
-//Update ...
-func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
+//UpdateProduct ...
+func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 
-	switch r.Method {
-	case http.MethodPut:
-		w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusOK)
 
-		_ = json.NewEncoder(w).Encode("Success")
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
-
-		_ = json.NewEncoder(w)
-	}
-
+	_ = json.NewEncoder(w).Encode("Success")
 }
 
-//Delete ...
-func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
+//DeleteProduct ...
+func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 
-	switch r.Method {
-	case http.MethodDelete:
-		w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusOK)
 
-		_ = json.NewEncoder(w).Encode("Success")
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
+	_ = json.NewEncoder(w).Encode("Success")
+}
 
-		_ = json.NewEncoder(w)
-	}
+//CATEGORY HANDLERS
 
+//ListCategories ...
+func (h *Handler) ListCategories(w http.ResponseWriter, r *http.Request) {
+
+	w.WriteHeader(http.StatusOK)
+
+	_ = json.NewEncoder(w).Encode("Success")
+}
+
+//ReadCategory ...
+func (h *Handler) ReadCategory(w http.ResponseWriter, r *http.Request) {
+
+	w.WriteHeader(http.StatusOK)
+
+	_ = json.NewEncoder(w).Encode("Success")
+}
+
+//CreateCategory ...
+func (h *Handler) CreateCategory(w http.ResponseWriter, r *http.Request) {
+
+	w.WriteHeader(http.StatusOK)
+
+	_ = json.NewEncoder(w).Encode("Success")
+}
+
+//UpdateCategory ...
+func (h *Handler) UpdateCategory(w http.ResponseWriter, r *http.Request) {
+
+	w.WriteHeader(http.StatusOK)
+
+	_ = json.NewEncoder(w).Encode("Success")
+}
+
+//DeleteCategory ...
+func (h *Handler) DeleteCategory(w http.ResponseWriter, r *http.Request) {
+
+	w.WriteHeader(http.StatusOK)
+
+	_ = json.NewEncoder(w).Encode("Success")
 }

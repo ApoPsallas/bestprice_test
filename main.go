@@ -23,11 +23,17 @@ func createRouter(cfg *config.Config) *mux.Router {
 
 	h := bp_http.Handler{Repo: repo}
 
-	r.HandleFunc("/list", h.List)
-	r.HandleFunc("/read", h.Read)
-	r.HandleFunc("/create", h.Create)
-	r.HandleFunc("/update", h.Update)
-	r.HandleFunc("/delete", h.Delete)
+	r.HandleFunc("/categories/list", h.ListCategories).Methods(http.MethodGet)
+	r.HandleFunc("/categories/{id}/read", h.ReadCategory).Methods(http.MethodGet)
+	r.HandleFunc("/categories/{id}/delete", h.DeleteCategory).Methods(http.MethodDelete)
+	r.HandleFunc("/categories/create", h.CreateCategory).Methods(http.MethodPost)
+	r.HandleFunc("/categories/update", h.UpdateCategory).Methods(http.MethodPut)
+
+	r.HandleFunc("/products/list", h.ListProducts).Methods(http.MethodGet)
+	r.HandleFunc("/products/{id}/read", h.ReadProduct).Methods(http.MethodGet)
+	r.HandleFunc("/products/{id}/delete", h.DeleteProduct).Methods(http.MethodDelete)
+	r.HandleFunc("/products/create", h.CreateProduct).Methods(http.MethodPost)
+	r.HandleFunc("/products/update", h.UpdateProduct).Methods(http.MethodPut)
 
 	return r
 

@@ -1,7 +1,7 @@
 package http
 
 import (
-	"bestprice_test/internal/app/service"
+	"bestprice_test/internal/app/repository"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -9,159 +9,142 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestList(t *testing.T) {
+func TestListProducts(t *testing.T) {
 
-	request := httptest.NewRequest("GET", "/list", nil)
-	responseWriter := httptest.NewRecorder()
+	r := httptest.NewRequest("GET", "/products/list", nil)
+	w := httptest.NewRecorder()
 
-	s := service.ApiService{}
+	repo := repository.Mapper{}
+	h := Handler{Repo: &repo}
 
-	h := Handler{Service: s}
+	srv := http.HandlerFunc(h.ListProducts)
 
-	srv := http.HandlerFunc(h.List)
-
-	srv.ServeHTTP(responseWriter, request)
-	assert.Equal(t, http.StatusOK, responseWriter.Code)
+	srv.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestListWrongMethod(t *testing.T) {
+func TestReadProduct(t *testing.T) {
 
-	request := httptest.NewRequest("POST", "/list", nil)
-	responseWriter := httptest.NewRecorder()
+	r := httptest.NewRequest("GET", "/products/1/read", nil)
+	w := httptest.NewRecorder()
 
-	s := service.ApiService{}
+	repo := repository.Mapper{}
+	h := Handler{Repo: &repo}
 
-	h := Handler{Service: s}
+	srv := http.HandlerFunc(h.ReadProduct)
 
-	srv := http.HandlerFunc(h.List)
-
-	srv.ServeHTTP(responseWriter, request)
-	assert.Equal(t, http.StatusMethodNotAllowed, responseWriter.Code)
+	srv.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestRead(t *testing.T) {
+func TestCreateProduct(t *testing.T) {
 
-	request := httptest.NewRequest("GET", "/read", nil)
-	responseWriter := httptest.NewRecorder()
+	r := httptest.NewRequest("POST", "/products/create", nil)
+	w := httptest.NewRecorder()
 
-	s := service.ApiService{}
+	repo := repository.Mapper{}
+	h := Handler{Repo: &repo}
 
-	h := Handler{Service: s}
+	srv := http.HandlerFunc(h.CreateProduct)
 
-	srv := http.HandlerFunc(h.Read)
-
-	srv.ServeHTTP(responseWriter, request)
-	assert.Equal(t, http.StatusOK, responseWriter.Code)
+	srv.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-//http.StatusMethodNotAllowed
+func TestUpdateProduct(t *testing.T) {
 
-func TestReadWrongMethod(t *testing.T) {
+	r := httptest.NewRequest("PUT", "/products/update", nil)
+	w := httptest.NewRecorder()
 
-	request := httptest.NewRequest("POST", "/read", nil)
-	responseWriter := httptest.NewRecorder()
+	repo := repository.Mapper{}
+	h := Handler{Repo: &repo}
 
-	s := service.ApiService{}
+	srv := http.HandlerFunc(h.UpdateProduct)
 
-	h := Handler{Service: s}
-
-	srv := http.HandlerFunc(h.Read)
-
-	srv.ServeHTTP(responseWriter, request)
-	assert.Equal(t, http.StatusMethodNotAllowed, responseWriter.Code)
-}
-func TestCreate(t *testing.T) {
-
-	request := httptest.NewRequest("POST", "/create", nil)
-	responseWriter := httptest.NewRecorder()
-
-	s := service.ApiService{}
-
-	h := Handler{Service: s}
-
-	srv := http.HandlerFunc(h.Create)
-
-	srv.ServeHTTP(responseWriter, request)
-	assert.Equal(t, http.StatusOK, responseWriter.Code)
+	srv.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-//http.StatusMethodNotAllowed
+func TestDeleteProduct(t *testing.T) {
 
-func TestCreateWrongMethod(t *testing.T) {
+	r := httptest.NewRequest("DELETE", "/products/1/delete", nil)
+	w := httptest.NewRecorder()
 
-	request := httptest.NewRequest("GET", "/create", nil)
-	responseWriter := httptest.NewRecorder()
+	repo := repository.Mapper{}
+	h := Handler{Repo: &repo}
 
-	s := service.ApiService{}
+	srv := http.HandlerFunc(h.DeleteProduct)
 
-	h := Handler{Service: s}
-
-	srv := http.HandlerFunc(h.Create)
-
-	srv.ServeHTTP(responseWriter, request)
-	assert.Equal(t, http.StatusMethodNotAllowed, responseWriter.Code)
+	srv.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestUpdate(t *testing.T) {
+func TestListCategories(t *testing.T) {
 
-	request := httptest.NewRequest("PUT", "/update", nil)
-	responseWriter := httptest.NewRecorder()
+	r := httptest.NewRequest("GET", "/categories/list", nil)
+	w := httptest.NewRecorder()
 
-	s := service.ApiService{}
+	repo := repository.Mapper{}
+	h := Handler{Repo: &repo}
 
-	h := Handler{Service: s}
+	srv := http.HandlerFunc(h.ListCategories)
 
-	srv := http.HandlerFunc(h.Update)
-
-	srv.ServeHTTP(responseWriter, request)
-	assert.Equal(t, http.StatusOK, responseWriter.Code)
+	srv.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-//http.StatusMethodNotAllowed
+func TestReadCategory(t *testing.T) {
 
-func TestUpdateWrongMethod(t *testing.T) {
+	r := httptest.NewRequest("GET", "/categories/1/read", nil)
+	w := httptest.NewRecorder()
 
-	request := httptest.NewRequest("POST", "/update", nil)
-	responseWriter := httptest.NewRecorder()
+	repo := repository.Mapper{}
+	h := Handler{Repo: &repo}
 
-	s := service.ApiService{}
+	srv := http.HandlerFunc(h.ReadCategory)
 
-	h := Handler{Service: s}
-
-	srv := http.HandlerFunc(h.Update)
-
-	srv.ServeHTTP(responseWriter, request)
-	assert.Equal(t, http.StatusMethodNotAllowed, responseWriter.Code)
+	srv.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestDelete(t *testing.T) {
+func TestCreateCategory(t *testing.T) {
 
-	request := httptest.NewRequest("DELETE", "/delete", nil)
-	responseWriter := httptest.NewRecorder()
+	r := httptest.NewRequest("POST", "/categories/create", nil)
+	w := httptest.NewRecorder()
 
-	s := service.ApiService{}
+	repo := repository.Mapper{}
+	h := Handler{Repo: &repo}
 
-	h := Handler{Service: s}
+	srv := http.HandlerFunc(h.CreateCategory)
 
-	srv := http.HandlerFunc(h.Delete)
-
-	srv.ServeHTTP(responseWriter, request)
-	assert.Equal(t, http.StatusOK, responseWriter.Code)
+	srv.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-//http.StatusMethodNotAllowed
+func TestUpdateCategory(t *testing.T) {
 
-func TestDeleteWrongMethod(t *testing.T) {
+	r := httptest.NewRequest("PUT", "/categories/update", nil)
+	w := httptest.NewRecorder()
 
-	request := httptest.NewRequest("POST", "/delete", nil)
-	responseWriter := httptest.NewRecorder()
+	repo := repository.Mapper{}
+	h := Handler{Repo: &repo}
 
-	s := service.ApiService{}
+	srv := http.HandlerFunc(h.UpdateCategory)
 
-	h := Handler{Service: s}
+	srv.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
 
-	srv := http.HandlerFunc(h.Delete)
+func TestDeleteCategory(t *testing.T) {
 
-	srv.ServeHTTP(responseWriter, request)
-	assert.Equal(t, http.StatusMethodNotAllowed, responseWriter.Code)
+	r := httptest.NewRequest("DELETE", "/categories/1/delete", nil)
+	w := httptest.NewRecorder()
+
+	repo := repository.Mapper{}
+	h := Handler{Repo: &repo}
+
+	srv := http.HandlerFunc(h.DeleteCategory)
+
+	srv.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
