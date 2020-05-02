@@ -15,6 +15,9 @@ func (m *CategorySqlMapper) Insert(c *model.Category) error {
 }
 
 func (m *CategorySqlMapper) Read(ID int) (*model.Category, error) {
+	// var c model.Category
+	// test := m.DB.Query("SELECT * FROM category WHERE id=?", ID).Scan(&c.ID, &c.Name)
+	// test2 := m.DB.Prepare()
 	return &model.Category{ID: ID}, nil
 }
 

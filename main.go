@@ -3,7 +3,7 @@ package main
 import (
 	"bestprice_test/config"
 	"bestprice_test/internal/app/repository"
-	app_sql "bestprice_test/internal/app/repository/sql"
+	bp_sql "bestprice_test/internal/app/repository/sql"
 	bp_http "bestprice_test/internal/http"
 	"fmt"
 	"log"
@@ -17,7 +17,7 @@ import (
 
 func createRouter(cfg *config.Config) *mux.Router {
 	r := mux.NewRouter()
-	db, _ := app_sql.ConnectToDB(cfg.MySQL)
+	db, _ := bp_sql.ConnectToDB(cfg.MySQL)
 
 	repo := repository.NewMapper(db)
 

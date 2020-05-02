@@ -6,13 +6,13 @@ import (
 )
 
 type Mapper struct {
-	Cm *mappers.CategorySqlMapper
-	Pm *mappers.ProductSqlMapper
+	CategorySqlMapper *mappers.CategorySqlMapper
+	ProductSqlMapper *mappers.ProductSqlMapper
 }
 
 func NewMapper(DB *sql.DB) *Mapper {
 	cm := &mappers.CategorySqlMapper{DB: DB}
 	pm := &mappers.ProductSqlMapper{DB: DB}
-	return &Mapper{Cm: cm, Pm: pm}
+	return &Mapper{CategorySqlMapper: cm, ProductSqlMapper: pm}
 
 }
