@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 )
 
 type Handler struct {
@@ -54,7 +55,7 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if validErrs := p.Validate(); len(validErrs) > 0 {
+	if validErrs := validateProduct(&p); len(validErrs) > 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		res = &helper.Response{Success: false, Data: validErrs}
 		_ = json.NewEncoder(w).Encode(res)
@@ -125,7 +126,7 @@ func (h *Handler) CreateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if validErrs := c.Validate(); len(validErrs) > 0 {
+	if validErrs := validateCategory(&c); len(validErrs) > 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		res = &helper.Response{Success: false, Data: validErrs}
 		_ = json.NewEncoder(w).Encode(res)
@@ -154,4 +155,48 @@ func (h *Handler) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	_ = json.NewEncoder(w).Encode("Success")
+}
+
+func validateProduct(p *model.Product) url.Values {
+	errs := url.Values{}
+
+	if p.CategoryID == 0 {
+		errs.Add("category_id", "The category_id field is required!")
+	}
+
+	if p.Title == "" {
+		errs.Add("title", "The title field is required!")
+	}
+
+	if p.ImageURL == "" {
+		errs.Add("image_url", "The image_url field is required!")
+	}
+
+	if p.Price == 0 {
+		errs.Add("price", "The price field is required!")
+	}
+
+	if p.Description == "" {
+		errs.Add("description", "The description field is required!")
+	}
+
+	return errs
+}
+
+func validateCategory(c *model.Category) url.Values {
+	errs := url.Values{}
+
+	if c.Title == "" {
+		errs.Add("title", "The title field is required!")
+	}
+
+	if c.Position == 0 {
+		errs.Add("position", "The position field is required!")
+	}
+
+	if c.ImageURL == "" {
+		errs.Add("image_url", "The image_url field is required!")
+	}
+
+	return errs
 }

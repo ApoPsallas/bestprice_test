@@ -2,8 +2,11 @@ package http
 
 import (
 	"bestprice_test/internal/app/repository"
+	"bytes"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -39,8 +42,17 @@ func TestReadProduct(t *testing.T) {
 
 func TestCreateProduct(t *testing.T) {
 
-	r := httptest.NewRequest("POST", "/products/create", nil)
+	jsonStr := []byte(`{
+		"title":"bla",
+		"category_id":1,
+		"image_url":"blabla",
+		"description":"Lorem ipsum dolor sit amet,",
+		"price":19.99
+	}`)
+	r := httptest.NewRequest("POST", "/products/create", bytes.NewBuffer(jsonStr))
 	w := httptest.NewRecorder()
+
+	expected := []byte(`{"success":true,"data":null}`)
 
 	repo := repository.Mapper{}
 	h := Handler{Repo: &repo}
@@ -48,7 +60,33 @@ func TestCreateProduct(t *testing.T) {
 	srv := http.HandlerFunc(h.CreateProduct)
 
 	srv.ServeHTTP(w, r)
+	actual, _ := ioutil.ReadAll(w.Body)
 	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, string(expected), strings.TrimRight(string(actual), "\n"))
+}
+
+func TestCreateProductWrongPayload(t *testing.T) {
+
+	jsonStr := []byte(`{
+		"category_id":1,
+		"image_url":"blabla",
+		"description":"Lorem ipsum dolor sit amet,",
+		"price":19.99
+	}`)
+	r := httptest.NewRequest("POST", "/products/create", bytes.NewBuffer(jsonStr))
+	w := httptest.NewRecorder()
+
+	expected := []byte(`{"success":false,"data":{"title":["The title field is required!"]}}`)
+
+	repo := repository.Mapper{}
+	h := Handler{Repo: &repo}
+
+	srv := http.HandlerFunc(h.CreateProduct)
+
+	srv.ServeHTTP(w, r)
+	actual, _ := ioutil.ReadAll(w.Body)
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, string(expected), strings.TrimRight(string(actual), "\n"))
 }
 
 func TestUpdateProduct(t *testing.T) {
@@ -109,8 +147,15 @@ func TestReadCategory(t *testing.T) {
 
 func TestCreateCategory(t *testing.T) {
 
-	r := httptest.NewRequest("POST", "/categories/create", nil)
+	jsonStr := []byte(`{
+		"title":"Category Title",
+		"position":1,
+		"image_url":"image.com"
+	}`)
+	r := httptest.NewRequest("POST", "/categories/create", bytes.NewBuffer(jsonStr))
 	w := httptest.NewRecorder()
+
+	expected := []byte(`{"success":true,"data":null}`)
 
 	repo := repository.Mapper{}
 	h := Handler{Repo: &repo}
@@ -118,7 +163,31 @@ func TestCreateCategory(t *testing.T) {
 	srv := http.HandlerFunc(h.CreateCategory)
 
 	srv.ServeHTTP(w, r)
+	actual, _ := ioutil.ReadAll(w.Body)
 	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, string(expected), strings.TrimRight(string(actual), "\n"))
+}
+
+func TestCreateCategoryWrongPayload(t *testing.T) {
+
+	jsonStr := []byte(`{
+		"position":1,
+		"image_url":"image.com"
+	}`)
+	r := httptest.NewRequest("POST", "/categories/create", bytes.NewBuffer(jsonStr))
+	w := httptest.NewRecorder()
+
+	expected := []byte(`{"success":false,"data":{"title":["The title field is required!"]}}`)
+
+	repo := repository.Mapper{}
+	h := Handler{Repo: &repo}
+
+	srv := http.HandlerFunc(h.CreateCategory)
+
+	srv.ServeHTTP(w, r)
+	actual, _ := ioutil.ReadAll(w.Body)
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, string(expected), strings.TrimRight(string(actual), "\n"))
 }
 
 func TestUpdateCategory(t *testing.T) {
