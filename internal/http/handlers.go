@@ -44,7 +44,7 @@ func (h *Handler) ReadProduct(w http.ResponseWriter, r *http.Request) {
 
 	res = services.ReadProduct(id, h.Repo.ProductSqlMapper)
 	if !res.Success {
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusNotFound)
 	}
 
 	_ = json.NewEncoder(w).Encode(res)
@@ -89,18 +89,74 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 //UpdateProduct ...
 func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
+	var p model.Product
+	w.Header().Set("Content-type", "application/json")
+	res := &helper.Response{Success: false, Data: nil}
 
-	w.WriteHeader(http.StatusOK)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		res = &helper.Response{Success: false, Data: err.Error()}
+		_ = json.NewEncoder(w).Encode(res)
+		return
+	}
+	err = json.Unmarshal(body, &p)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		res = &helper.Response{Success: false, Data: err.Error()}
+		_ = json.NewEncoder(w).Encode(res)
+		return
+	}
 
-	_ = json.NewEncoder(w).Encode("Success")
+	if validErrs := validateProduct(&p); len(validErrs) > 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		res = &helper.Response{Success: false, Data: validErrs}
+		_ = json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	res = services.ReadProduct(p.ID, h.Repo.ProductSqlMapper)
+	if !res.Success {
+		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	res = services.UpdateProduct(&p, h.Repo.ProductSqlMapper)
+	if !res.Success {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	_ = json.NewEncoder(w).Encode(res)
 }
 
 //DeleteProduct ...
 func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 
-	w.WriteHeader(http.StatusOK)
+	params := mux.Vars(r)
+	w.Header().Set("Content-type", "application/json")
+	res := &helper.Response{Success: false, Data: nil}
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		res = &helper.Response{Success: false, Data: "Error: URL parameter '" + params["id"] + "' is not an integer"}
+		_ = json.NewEncoder(w).Encode(res)
+		return
+	}
 
-	_ = json.NewEncoder(w).Encode("Success")
+	res = services.ReadProduct(id, h.Repo.ProductSqlMapper)
+	if !res.Success {
+		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	res = services.DeleteProduct(id, h.Repo.ProductSqlMapper)
+	if !res.Success {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	_ = json.NewEncoder(w).Encode(res)
 }
 
 //CATEGORY HANDLERS
@@ -129,7 +185,7 @@ func (h *Handler) ReadCategory(w http.ResponseWriter, r *http.Request) {
 
 	res = services.ReadCategory(id, h.Repo.CategorySqlMapper)
 	if !res.Success {
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusNotFound)
 	}
 
 	_ = json.NewEncoder(w).Encode(res)
@@ -174,18 +230,75 @@ func (h *Handler) CreateCategory(w http.ResponseWriter, r *http.Request) {
 
 //UpdateCategory ...
 func (h *Handler) UpdateCategory(w http.ResponseWriter, r *http.Request) {
+	var c model.Category
+	w.Header().Set("Content-type", "application/json")
+	res := &helper.Response{Success: false, Data: nil}
 
-	w.WriteHeader(http.StatusOK)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		res = &helper.Response{Success: false, Data: err.Error()}
+		_ = json.NewEncoder(w).Encode(res)
+		return
+	}
+	err = json.Unmarshal(body, &c)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		res = &helper.Response{Success: false, Data: err.Error()}
+		_ = json.NewEncoder(w).Encode(res)
+		return
+	}
 
-	_ = json.NewEncoder(w).Encode("Success")
+	if validErrs := validateCategory(&c); len(validErrs) > 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		res = &helper.Response{Success: false, Data: validErrs}
+		_ = json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	res = services.ReadCategory(c.ID, h.Repo.CategorySqlMapper)
+	if !res.Success {
+		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	res = services.UpdateCategory(&c, h.Repo.CategorySqlMapper)
+	if !res.Success {
+		w.WriteHeader(http.StatusInternalServerError)
+		_ = json.NewEncoder(w).Encode(res)
+	}
+
+	_ = json.NewEncoder(w).Encode(res)
 }
 
 //DeleteCategory ...
 func (h *Handler) DeleteCategory(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	w.Header().Set("Content-type", "application/json")
+	res := &helper.Response{Success: false, Data: nil}
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		res = &helper.Response{Success: false, Data: "Error: URL parameter '" + params["id"] + "' is not an integer"}
+		_ = json.NewEncoder(w).Encode(res)
+		return
+	}
 
-	w.WriteHeader(http.StatusOK)
+	res = services.ReadCategory(id, h.Repo.CategorySqlMapper)
+	if !res.Success {
+		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(res)
+		return
+	}
 
-	_ = json.NewEncoder(w).Encode("Success")
+	res = services.DeleteCategory(id, h.Repo.CategorySqlMapper)
+	if !res.Success {
+		w.WriteHeader(http.StatusInternalServerError)
+
+	}
+
+	_ = json.NewEncoder(w).Encode(res)
 }
 
 func validateProduct(p *model.Product) url.Values {

@@ -18,7 +18,23 @@ func SaveCategory(c *model.Category, m *mappers.CategorySqlMapper) *helper.Respo
 func ReadCategory(ID int, m *mappers.CategorySqlMapper) *helper.Response {
 	p, err := m.Read(ID)
 	if err != nil {
-		return &helper.Response{Success: false, Data: err.Error}
+		return &helper.Response{Success: false, Data: err}
 	}
 	return &helper.Response{Success: true, Data: p}
+}
+
+func UpdateCategory(c *model.Category, m *mappers.CategorySqlMapper) *helper.Response {
+	err := m.Update(c)
+	if err != nil {
+		return &helper.Response{Success: false, Data: err}
+	}
+	return &helper.Response{Success: true, Data: nil}
+}
+
+func DeleteCategory(ID int, m *mappers.CategorySqlMapper) *helper.Response {
+	err := m.Delete(ID)
+	if err != nil {
+		return &helper.Response{Success: false, Data: err}
+	}
+	return &helper.Response{Success: true, Data: nil}
 }

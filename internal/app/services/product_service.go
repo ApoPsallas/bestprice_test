@@ -18,7 +18,23 @@ func SaveProduct(c *model.Product, m *mappers.ProductSqlMapper) *helper.Response
 func ReadProduct(ID int, m *mappers.ProductSqlMapper) *helper.Response {
 	p, err := m.Read(ID)
 	if err != nil {
-		return &helper.Response{Success: false, Data: err.Error}
+		return &helper.Response{Success: false, Data: err}
 	}
 	return &helper.Response{Success: true, Data: p}
+}
+
+func UpdateProduct(c *model.Product, m *mappers.ProductSqlMapper) *helper.Response {
+	err := m.Update(c)
+	if err != nil {
+		return &helper.Response{Success: false, Data: err}
+	}
+	return &helper.Response{Success: true, Data: nil}
+}
+
+func DeleteProduct(ID int, m *mappers.ProductSqlMapper) *helper.Response {
+	err := m.Delete(ID)
+	if err != nil {
+		return &helper.Response{Success: false, Data: err}
+	}
+	return &helper.Response{Success: true, Data: nil}
 }
