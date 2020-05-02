@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -28,18 +29,39 @@ func TestListProducts(t *testing.T) {
 
 func TestReadProduct(t *testing.T) {
 
-	r := httptest.NewRequest("GET", "/products/1/read", nil)
+	r := httptest.NewRequest("GET", "/products/{id}/read", nil)
+	r = mux.SetURLVars(r, map[string]string{"id": "1"})
 	w := httptest.NewRecorder()
 
 	repo := repository.Mapper{}
 	h := Handler{Repo: &repo}
 
 	srv := http.HandlerFunc(h.ReadProduct)
+	expected := []byte(`{"success":true,"data":{"id":1,"category_id":0,"title":"","image_url":"","price":0,"description":"","created_at":"","updated_at":""}}`)
 
 	srv.ServeHTTP(w, r)
+	actual, _ := ioutil.ReadAll(w.Body)
 	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, string(expected), strings.TrimRight(string(actual), "\n"))
 }
 
+func TestReadProductIDNotInt(t *testing.T) {
+
+	r := httptest.NewRequest("GET", "/product/{id}/read", nil)
+	r = mux.SetURLVars(r, map[string]string{"id": "a"})
+	w := httptest.NewRecorder()
+
+	repo := repository.Mapper{}
+	h := Handler{Repo: &repo}
+
+	srv := http.HandlerFunc(h.ReadProduct)
+	expected := []byte(`{"success":false,"data":"Error: URL parameter 'a' is not an integer"}`)
+
+	srv.ServeHTTP(w, r)
+	actual, _ := ioutil.ReadAll(w.Body)
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, string(expected), strings.TrimRight(string(actual), "\n"))
+}
 func TestCreateProduct(t *testing.T) {
 
 	jsonStr := []byte(`{
@@ -133,16 +155,38 @@ func TestListCategories(t *testing.T) {
 
 func TestReadCategory(t *testing.T) {
 
-	r := httptest.NewRequest("GET", "/categories/1/read", nil)
+	r := httptest.NewRequest("GET", "/category/{id}/read", nil)
+	r = mux.SetURLVars(r, map[string]string{"id": "1"})
 	w := httptest.NewRecorder()
 
 	repo := repository.Mapper{}
 	h := Handler{Repo: &repo}
 
 	srv := http.HandlerFunc(h.ReadCategory)
+	expected := []byte(`{"success":true,"data":{"id":1,"title":"","position":0,"image_url":"","created_at":"","updated_at":""}}`)
 
 	srv.ServeHTTP(w, r)
+	actual, _ := ioutil.ReadAll(w.Body)
 	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, string(expected), strings.TrimRight(string(actual), "\n"))
+}
+
+func TestReadCategoryIDNotInt(t *testing.T) {
+
+	r := httptest.NewRequest("GET", "/category/{id}/read", nil)
+	r = mux.SetURLVars(r, map[string]string{"id": "a"})
+	w := httptest.NewRecorder()
+
+	repo := repository.Mapper{}
+	h := Handler{Repo: &repo}
+
+	srv := http.HandlerFunc(h.ReadCategory)
+	expected := []byte(`{"success":false,"data":"Error: URL parameter 'a' is not an integer"}`)
+
+	srv.ServeHTTP(w, r)
+	actual, _ := ioutil.ReadAll(w.Body)
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, string(expected), strings.TrimRight(string(actual), "\n"))
 }
 
 func TestCreateCategory(t *testing.T) {

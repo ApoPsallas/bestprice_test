@@ -9,6 +9,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 type Handler struct {
@@ -28,16 +31,30 @@ func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
 //ReadProduct ...
 func (h *Handler) ReadProduct(w http.ResponseWriter, r *http.Request) {
 
-	w.WriteHeader(http.StatusOK)
+	params := mux.Vars(r)
+	w.Header().Set("Content-type", "application/json")
+	res := &helper.Response{Success: false, Data: nil}
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		res = &helper.Response{Success: false, Data: "Error: URL parameter '" + params["id"] + "' is not an integer"}
+		_ = json.NewEncoder(w).Encode(res)
+		return
+	}
 
-	_ = json.NewEncoder(w).Encode("Success")
+	res = services.ReadProduct(id, h.Repo.ProductSqlMapper)
+	if !res.Success {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	_ = json.NewEncoder(w).Encode(res)
 }
 
 //CreateProduct ...
 func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 	var p model.Product
-	w.Header().Set("Content-type", "applciation/json")
+	w.Header().Set("Content-type", "application/json")
 	res := &helper.Response{Success: false, Data: nil}
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -99,16 +116,30 @@ func (h *Handler) ListCategories(w http.ResponseWriter, r *http.Request) {
 //ReadCategory ...
 func (h *Handler) ReadCategory(w http.ResponseWriter, r *http.Request) {
 
-	w.WriteHeader(http.StatusOK)
+	params := mux.Vars(r)
+	w.Header().Set("Content-type", "application/json")
+	res := &helper.Response{Success: false, Data: nil}
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		res = &helper.Response{Success: false, Data: "Error: URL parameter '" + params["id"] + "' is not an integer"}
+		_ = json.NewEncoder(w).Encode(res)
+		return
+	}
 
-	_ = json.NewEncoder(w).Encode("Success")
+	res = services.ReadCategory(id, h.Repo.CategorySqlMapper)
+	if !res.Success {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	_ = json.NewEncoder(w).Encode(res)
 }
 
 //CreateCategory ...
 func (h *Handler) CreateCategory(w http.ResponseWriter, r *http.Request) {
 
 	var c model.Category
-	w.Header().Set("Content-type", "applciation/json")
+	w.Header().Set("Content-type", "application/json")
 	res := &helper.Response{Success: false, Data: nil}
 
 	body, err := ioutil.ReadAll(r.Body)

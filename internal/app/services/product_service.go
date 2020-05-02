@@ -14,3 +14,11 @@ func SaveProduct(c *model.Product, m *mappers.ProductSqlMapper) *helper.Response
 	}
 	return &helper.Response{Success: true, Data: nil}
 }
+
+func ReadProduct(ID int, m *mappers.ProductSqlMapper) *helper.Response {
+	p, err := m.Read(ID)
+	if err != nil {
+		return &helper.Response{Success: false, Data: err.Error}
+	}
+	return &helper.Response{Success: true, Data: p}
+}
