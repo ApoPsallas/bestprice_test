@@ -28,9 +28,8 @@ func TestUpdateCategory(t *testing.T) {
 	c := model.Category{}
 	cm := CategorySqlMapper{}
 
-	actual, err := cm.Update(&c)
+	err := cm.Update(&c)
 	assert.Nil(t, err)
-	assert.Equal(t, actual, &c)
 }
 
 func TestDeleteCategory(t *testing.T) {

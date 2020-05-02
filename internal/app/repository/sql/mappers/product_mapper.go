@@ -12,19 +12,37 @@ type ProductSqlMapper struct {
 }
 
 func (m *ProductSqlMapper) Insert(p *model.Product) error {
-	return nil
+	q := "INSERT INTO products (category_id,title,image_url,price,description) VALUES (?,?,?,?,?);"
+	_, err := m.DB.Query(q, p.CategoryID, p.Title, p.ImageURL, p.Price, p.Description)
+	return err
 }
 
 func (m *ProductSqlMapper) Read(ID int) (*model.Product, error) {
-	return &model.Product{ID: ID}, nil
+	var p model.Product
+	row, err := m.DB.Query("SELECT * FROM products WHERE id=?;", ID)
+	if err != nil {
+		return nil, err
+	}
+	row.Next()
+
+	err = row.Scan(&p.ID, &p.CategoryID, &p.Title, &p.Price, &p.ImageURL, &p.Description, &p.Created_at, &p.Updated_at)
+	if err != nil {
+		return nil, err
+	}
+
+	return &p, nil
 }
 
-func (m *ProductSqlMapper) Update(p *model.Product) (*model.Product, error) {
-	return p, nil
+func (m *ProductSqlMapper) Update(p *model.Product) error {
+	q := "UPDATE products SET category_id = ?, title = ?, image_url = ?, price = ?, description = ? WHERE id = ?;"
+	_, err := m.DB.Query(q, p.CategoryID, p.Title, p.ImageURL, p.Price, p.Description, p.ID)
+	return err
 }
 
 func (m *ProductSqlMapper) Delete(ID int) error {
-	return nil
+	q := "DELETE FROM products WHERE id = ?;"
+	_, err := m.DB.Query(q, ID)
+	return err
 }
 
 func (m *ProductSqlMapper) List() {

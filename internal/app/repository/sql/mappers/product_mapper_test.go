@@ -28,9 +28,8 @@ func TestUpdateProduct(t *testing.T) {
 	p := model.Product{}
 	pm := ProductSqlMapper{}
 
-	actual, err := pm.Update(&p)
+	err := pm.Update(&p)
 	assert.Nil(t, err)
-	assert.Equal(t, actual, &p)
 }
 
 func TestDeleteProduct(t *testing.T) {
