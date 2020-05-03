@@ -21,19 +21,21 @@ func createRouter(cfg *config.Config) *mux.Router {
 
 	repo := repository.NewMapper(db)
 
-	h := bp_http.Handler{Repo: repo}
+	h := bp_http.Handler{Repo: repo, Authorization: cfg.JWT}
 
 	r.HandleFunc("/categories/list", h.ListCategories).Methods(http.MethodGet)
 	r.HandleFunc("/categories/{id}/read", h.ReadCategory).Methods(http.MethodGet)
-	r.HandleFunc("/categories/{id}/delete", h.DeleteCategory).Methods(http.MethodDelete)
-	r.HandleFunc("/categories/create", h.CreateCategory).Methods(http.MethodPost)
-	r.HandleFunc("/categories/update", h.UpdateCategory).Methods(http.MethodPut)
+	r.Handle("/categories/{id}/delete", h.Middleware(http.HandlerFunc(h.DeleteCategory))).Methods(http.MethodDelete)
+	r.Handle("/categories/create", h.Middleware(http.HandlerFunc(h.CreateCategory))).Methods(http.MethodPost)
+	r.Handle("/categories/update", h.Middleware(http.HandlerFunc(h.UpdateCategory))).Methods(http.MethodPut)
 
 	r.HandleFunc("/products/list", h.ListProducts).Methods(http.MethodGet)
 	r.HandleFunc("/products/{id}/read", h.ReadProduct).Methods(http.MethodGet)
-	r.HandleFunc("/products/{id}/delete", h.DeleteProduct).Methods(http.MethodDelete)
-	r.HandleFunc("/products/create", h.CreateProduct).Methods(http.MethodPost)
-	r.HandleFunc("/products/update", h.UpdateProduct).Methods(http.MethodPut)
+	r.Handle("/products/{id}/delete", h.Middleware(http.HandlerFunc(h.DeleteProduct))).Methods(http.MethodDelete)
+	r.Handle("/products/create", h.Middleware(http.HandlerFunc(h.CreateProduct))).Methods(http.MethodPost)
+	r.Handle("/products/update", h.Middleware(http.HandlerFunc(h.UpdateProduct))).Methods(http.MethodPut)
+
+	r.HandleFunc("/token", h.GetToken).Methods(http.MethodGet)
 
 	return r
 

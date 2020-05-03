@@ -7,6 +7,7 @@ import (
 
 type Config struct {
 	MySQL *MySQLConfig
+	JWT   *JWTConfig
 }
 
 type MySQLConfig struct {
@@ -17,8 +18,12 @@ type MySQLConfig struct {
 	DB       string
 }
 
+type JWTConfig struct {
+	JWTSecret string
+}
+
 func NewConfig() *Config {
-	return &Config{MySQL: NewMySQLConfig()}
+	return &Config{MySQL: NewMySQLConfig(), JWT: NewJWTConfig()}
 }
 
 func NewMySQLConfig() *MySQLConfig {
@@ -34,4 +39,9 @@ func NewMySQLConfig() *MySQLConfig {
 		Host:     h,
 		Port:     p,
 		DB:       db}
+}
+
+func NewJWTConfig() *JWTConfig {
+	s := os.Getenv("SECRET_KEY")
+	return &JWTConfig{JWTSecret: s}
 }

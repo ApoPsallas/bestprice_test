@@ -1,21 +1,28 @@
 package http
 
 import (
+	"bestprice_test/config"
 	"bestprice_test/internal/app/helper"
 	"bestprice_test/internal/app/model"
 	"bestprice_test/internal/app/repository"
 	"bestprice_test/internal/app/services"
+	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 )
 
 type Handler struct {
-	Repo *repository.Mapper
+	Authorization *config.JWTConfig
+	Repo   *repository.Mapper
 }
 
 // PRODUCT HANDLERS
@@ -315,6 +322,49 @@ func (h *Handler) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = json.NewEncoder(w).Encode(res)
+}
+
+func (h *Handler) GetToken(w http.ResponseWriter, r *http.Request) {
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+
+	claims["admin"] = true
+	claims["name"] = "best_price"
+	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+	token.Claims = claims
+	tokenString, _ := token.SignedString([]byte(h.Authorization.JWTSecret))
+
+	_ = json.NewEncoder(w).Encode(tokenString)
+}
+
+func (h *Handler) Middleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authHeader := strings.Split(r.Header.Get("Authorization"), "Bearer ")
+		if len(authHeader) != 2 {
+			fmt.Println("Malformed token")
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Malformed Token"))
+		} else {
+			jwtToken := authHeader[1]
+			token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+					return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+				}
+				return []byte(h.Authorization.JWTSecret), nil
+			})
+
+			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+				ctx := context.WithValue(r.Context(), "props", claims)
+				// Access context values in handlers like this
+				// props, _ := r.Context().Value("props").(jwt.MapClaims)
+				next.ServeHTTP(w, r.WithContext(ctx))
+			} else {
+				fmt.Println(err)
+				w.WriteHeader(http.StatusUnauthorized)
+				w.Write([]byte("Unauthorized"))
+			}
+		}
+	})
 }
 
 func validateProduct(p *model.Product) url.Values {
