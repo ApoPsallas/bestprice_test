@@ -38,3 +38,11 @@ func DeleteCategory(ID int, m *mappers.CategorySqlMapper) *helper.Response {
 	}
 	return &helper.Response{Success: true, Data: nil}
 }
+
+func ListCategories(pn *helper.Pagination, m *mappers.CategorySqlMapper) *helper.Response {
+	c, err := m.List(pn)
+	if err != nil {
+		return &helper.Response{Success: false, Data: err}
+	}
+	return &helper.Response{Success: true, Data: c}
+}

@@ -1,6 +1,7 @@
 package mappers
 
 import (
+	"bestprice_test/internal/app/helper"
 	"bestprice_test/internal/app/model"
 	"database/sql"
 
@@ -45,6 +46,27 @@ func (m *ProductSqlMapper) Delete(ID int) error {
 	return err
 }
 
-func (m *ProductSqlMapper) List() {
+func (m *ProductSqlMapper) List(pn *helper.Pagination) (*[]model.Product, error) {
+	var products []model.Product
+	q := "SELECT * FROM products ORDER BY id "
+	if pn.Order == "asc" {
+		q = q + "ASC LIMIT ?,?"
+	} else {
+		q = q + "DESC LIMIT ?,?"
+	}
+	row, err := m.DB.Query(q, pn.PerPage*(pn.Page-1), pn.PerPage)
+	if err != nil {
+		return nil, err
+	}
+	for row.Next() {
+		var p model.Product
+		err = row.Scan(&p.ID, &p.CategoryID, &p.Title, &p.Price, &p.ImageURL, &p.Description, &p.Created_at, &p.Updated_at)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+
+	return &products, nil
 
 }

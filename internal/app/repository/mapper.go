@@ -7,7 +7,7 @@ import (
 
 type Mapper struct {
 	CategorySqlMapper *mappers.CategorySqlMapper
-	ProductSqlMapper *mappers.ProductSqlMapper
+	ProductSqlMapper  *mappers.ProductSqlMapper
 }
 
 func NewMapper(DB *sql.DB) *Mapper {

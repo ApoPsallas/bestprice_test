@@ -38,3 +38,11 @@ func DeleteProduct(ID int, m *mappers.ProductSqlMapper) *helper.Response {
 	}
 	return &helper.Response{Success: true, Data: nil}
 }
+
+func ListProducts(pn *helper.Pagination, m *mappers.ProductSqlMapper) *helper.Response {
+	p, err := m.List(pn)
+	if err != nil {
+		return &helper.Response{Success: false, Data: err}
+	}
+	return &helper.Response{Success: true, Data: p}
+}

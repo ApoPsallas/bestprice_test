@@ -22,10 +22,17 @@ type Handler struct {
 
 //ListProducts ...
 func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	params := r.URL.Query()
+	pn := helper.NewPagination(params)
+	res := &helper.Response{Success: false, Data: nil}
 
-	_ = json.NewEncoder(w).Encode("Success")
+	res = services.ListProducts(pn, h.Repo.ProductSqlMapper)
+	if !res.Success {
+		w.WriteHeader(http.StatusNotFound)
+	}
+	_ = json.NewEncoder(w).Encode(res)
 }
 
 //ReadProduct ...
@@ -164,9 +171,18 @@ func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 //ListCategories ...
 func (h *Handler) ListCategories(w http.ResponseWriter, r *http.Request) {
 
+	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	params := r.URL.Query()
+	pn := helper.NewPagination(params)
+	res := &helper.Response{Success: false, Data: nil}
 
-	_ = json.NewEncoder(w).Encode("Success")
+	res = services.ListCategories(pn, h.Repo.CategorySqlMapper)
+	if !res.Success {
+		w.WriteHeader(http.StatusNotFound)
+	}
+
+	_ = json.NewEncoder(w).Encode(res)
 }
 
 //ReadCategory ...
